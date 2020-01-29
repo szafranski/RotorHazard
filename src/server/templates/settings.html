@@ -1055,6 +1055,11 @@
 			return false;
 		});
 
+		$('button#restart_server').click(function (event) {
+			socket.emit('restart_server');
+			return false;
+		});
+
 		socket.on('set_option', function (msg) {
 			$('.set_option[data-option="' + msg.label +'"]').val(msg.value);
 		});
@@ -1764,6 +1769,7 @@
 		<div class="control-set">
 			<a href="#shutdown_confirm" class="btn-danger button-like open-mfp-popup">{{ __('Shut Down') }}</a>
 			<a href="#reboot_confirm" class="btn-danger button-like open-mfp-popup">{{ __('Reboot') }}</a>
+			<a href="#restart_confirm" class="btn-danger button-like open-mfp-popup">{{ __('Restart') }}</a>
 			{% if Debug %}<a href="/hardwarelog" class="debug button-like">{{ __('Log') }}</a>{% endif %}
 		</div>
 
@@ -1781,6 +1787,15 @@
 			<div class="popup-content">
 				<p>{{ __('Reboot server?') }}</p>
 				<p><button class="btn-danger" id="reboot_pi">{{ __('Reboot') }}</button>
+				<button class="cancel">{{ __('Cancel') }}</button></p>
+			</div>
+		</div>
+
+		<div id="restart_confirm" class="priority-message-interrupt mfp-hide popup">
+			<h2>Alert</h2>
+			<div class="popup-content">
+				<p>{{ __('Restart server process?') }}</p>
+				<p><button class="btn-danger" id="restart_server">{{ __('Restart') }}</button>
 				<button class="cancel">{{ __('Cancel') }}</button></p>
 			</div>
 		</div>

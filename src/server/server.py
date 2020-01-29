@@ -30,6 +30,10 @@ from flask_sqlalchemy import SQLAlchemy
 import random
 import json
 
+# Store CWD so if it's ever changed, the process can still restart itself
+_startup_cwd = os.getcwd()
+RESTART_FLAG = False
+
 # LED imports
 from led_handler import Color, LEDHandler, led_on, led_off
 from strip_led_handler import led_theaterChase, led_rainbow, led_rainbowCycle, led_theaterChaseRainbow
@@ -1597,12 +1601,23 @@ def on_shutdown_pi():
 
 @SOCKET_IO.on('reboot_pi')
 def on_reboot_pi():
-    '''Shutdown the raspberry pi.'''
+    '''Reboot the raspberry pi.'''
     CLUSTER.emit('reboot_pi')
     emit_priority_message(__('Server is rebooting.'), True)
     server_log('Rebooting pi')
     gevent.sleep(1);
     os.system("sudo reboot now")
+
+@SOCKET_IO.on('restart_server')
+def on_restart_server():
+    '''Re-execute the current process.'''
+    global RESTART_FLAG
+    CLUSTER.emit('restart_server')
+    emit_priority_message(__('Server is restarting.'), True)
+    server_log('Restarting server process')
+    RESTART_FLAG = True
+    gevent.sleep(1);
+    SOCKET_IO.stop();
 
 @SOCKET_IO.on("set_min_lap")
 def on_set_min_lap(data):
@@ -4436,6 +4451,19 @@ def start(port_val = Config['GENERAL']['HTTP_PORT']):
     except Exception as ex:
         print "Server exception:  " + str(ex)
     led_handler.shutdown()  # server is shutting down, so shut off LEDs
+    print('Server has shut down.')
+
+    if RESTART_FLAG:
+        restart()
+
+def restart():
+    args = sys.argv[:]
+    args.insert(0, sys.executable)
+    if sys.platform == 'win32':
+        args = ['"%s"' % arg for arg in args]
+    print('Respawning %s' % ' '.join(args))
+    os.chdir(_startup_cwd)
+    os.execv(sys.executable, args)
 
 # Start HTTP server
 if __name__ == '__main__':
