@@ -7,7 +7,12 @@
 #include <Arduino.h>
 #include "rssi.h"
 
-#include "median-filter.h"
+//select the filter to use here
+//#include "median-filter.h"
+//#include "lowpass20hz-filter.h"
+//#include "lowpass50hz-filter.h"
+#include "lowpass100hz-filter.h"
+//#include "no-filter.h"
 
 struct Settings settings;
 struct State state;
