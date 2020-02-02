@@ -6,13 +6,16 @@
 // API level for read/write commands; increment when commands are modified
 #define NODE_API_LEVEL 21
 
-struct Message_s
+class Message
 {
+public:
     uint8_t command;  // code to identify messages
     Buffer buffer;  // request/response payload
-};
 
-typedef struct Message_s Message_t;
+    byte getPayloadSize();
+    void handleWriteCommand(bool serialFlag);
+    void handleReadCommand(bool serialFlag);
+};
 
 #define MIN_FREQ 100
 #define MAX_FREQ 9999
@@ -42,10 +45,6 @@ typedef struct Message_s Message_t;
 #define COMM_ACTIVITY   0x10
 #define LAPSTATS_READ   0x20
 #define SERIAL_CMD_MSG  0x40
-
-byte getPayloadSize(uint8_t command);
-void handleWriteCommand(Message_t *msg, bool serialFlag);
-void handleReadCommand(Message_t *msg, bool serialFlag);
 
 extern uint8_t settingChangedFlags;
 
