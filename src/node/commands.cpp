@@ -133,9 +133,9 @@ void Message::handleReadCommand(bool serialFlag)
             ioBufferWriteRssi(buffer, lastPass.rssiPeak);  // RSSI peak for last lap pass
             buffer.write16(uint16_t(state.loopTimeMicros));
             uint8_t flags = state.crossing ? (uint8_t)1 : (uint8_t)0;  // 'crossing' status
-            if (!history.peakSend.isEmpty()
-                  && (history.nadirSend.isEmpty()
-                    || (history.peakSend.first().firstTime < history.nadirSend.first().firstTime)))
+            if (!history.peakSend->isEmpty()
+                  && (history.nadirSend->isEmpty()
+                    || (history.peakSend->first().firstTime < history.nadirSend->first().firstTime)))
             {
                 // we're going to send a peak rather than a nadir (or nothing)
                 flags |= 0x02;
@@ -144,21 +144,21 @@ void Message::handleReadCommand(bool serialFlag)
             ioBufferWriteRssi(buffer, lastPass.rssiNadir);  // lowest rssi since end of last pass
             ioBufferWriteRssi(buffer, state.nodeRssiNadir);
 
-            if (!history.peakSend.isEmpty()
-                  && (history.nadirSend.isEmpty()
-                    || (history.peakSend.first().firstTime < history.nadirSend.first().firstTime)))
+            if (!history.peakSend->isEmpty()
+                  && (history.nadirSend->isEmpty()
+                    || (history.peakSend->first().firstTime < history.nadirSend->first().firstTime)))
             {
                 // send peak and reset
-                ioBufferWriteExtremum(buffer, history.peakSend.first(), now);
-                history.peakSend.removeFirst();
+                ioBufferWriteExtremum(buffer, history.peakSend->first(), now);
+                history.peakSend->removeFirst();
             }
-            else if (!history.nadirSend.isEmpty()
-                  && (history.peakSend.isEmpty()
-                    || (history.nadirSend.first().firstTime < history.peakSend.first().firstTime)))
+            else if (!history.nadirSend->isEmpty()
+                  && (history.peakSend->isEmpty()
+                    || (history.nadirSend->first().firstTime < history.peakSend->first().firstTime)))
             {
                 // send nadir and reset
-                ioBufferWriteExtremum(buffer, history.nadirSend.first(), now);
-                history.nadirSend.removeFirst();
+                ioBufferWriteExtremum(buffer, history.nadirSend->first(), now);
+                history.nadirSend->removeFirst();
             }
             else
             {
