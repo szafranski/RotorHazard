@@ -109,7 +109,7 @@ rm temp.zip
 Enter the commands below to install RotorHazard server dependencies (be patient, this may take a few minutes):
 ```
 cd ~/RotorHazard/src/server
-sudo pip install -r requirements.txt
+sudo pip3 install -r requirements.txt
 ```
 
 ### 7. Reboot System
